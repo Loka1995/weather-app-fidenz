@@ -1,0 +1,20 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  font-family: sans-serif;
+  line-height: 1.5;
+}
+
+span {
+  display: block;
+  text-wrap: nowrap;
+}
+
+.weather-footer {
+  height: 3rem;
+  background-color: #383b47;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a4a4a7;
+}

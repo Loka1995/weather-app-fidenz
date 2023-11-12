@@ -1,0 +1,19 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  font-family: sans-serif;
+  line-height: 1.5;
+}
+
+span {
+  display: block;
+  text-wrap: nowrap;
+}
+
+.weather-container__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  column-gap: 1rem;
+}
