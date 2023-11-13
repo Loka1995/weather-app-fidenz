@@ -11,8 +11,11 @@ template.innerHTML =
 `;
 
 export class LargeWeatherCard extends HTMLElement {
+    static refreshID = 0;
     constructor(weatherObj) {
         super();
+        LargeWeatherCard.refreshID++;
+        this.cardID = LargeWeatherCard.refreshID;
 
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -35,10 +38,13 @@ export class LargeWeatherCard extends HTMLElement {
     
     showLargeCard = () => {
         this.style.display = 'block';
+        localStorage.setItem("stateID", this.cardID);
+        console.log(this.cardID);
     }
 
     backBtnHandler = () => {
         this.style.display = 'none';
+        localStorage.removeItem("stateID");
     }
 }
 

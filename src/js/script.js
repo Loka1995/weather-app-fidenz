@@ -51,6 +51,10 @@ const main = async function () {
             })
             cityList.shadowRoot.childNodes[3].appendChild(smallCard);
             appMain.shadowRoot.childNodes[3].insertAdjacentElement('beforeend', largeCard);
+            if (Number(localStorage.getItem("stateID")) === largeCard.cardID) {
+                smallCard.hideSmallCardList();
+                largeCard.showLargeCard();
+            }
         })
     } catch (error) {
         window.alert('Weather data cannot be retrieved!');
