@@ -45,6 +45,47 @@ const main = async function () {
                     location.search.includes("error="))) {
                 await auth0Client.handleRedirectCallback();
                 window.history.replaceState({}, document.title, "/");
+
+                loginButton.style.display = "none";
+
+                const appMain = new AppMain();
+                document.body.insertAdjacentElement('afterbegin', appMain);
+
+                const appHeader = new AppHeader();
+                appMain.shadowRoot.childNodes[3].insertAdjacentElement('afterbegin', appHeader);
+
+                const appFooter = new AppFooter();
+                document.body.insertAdjacentElement('beforeend', appFooter);
+
+                let addCity = new AddCityForm();
+                appHeader.insertAdjacentElement('afterend', addCity);
+
+                let cityList = new WeatherItemList();
+                addCity.insertAdjacentElement('afterend', cityList);
+
+                const cityCodes = await fetchCityCodes();
+                await cacheData(cityCodes);
+                const cachedCityWeatherData = await retrieveDataFromCache("cityData");
+                const cityObjects = createCityObjects(cachedCityWeatherData);
+
+                cityObjects.forEach(cityObject => {
+                    let smallCard = new SmallWeatherCard(cityObject);
+                    let largeCard = new LargeWeatherCard(cityObject);
+                    smallCard.addEventListener('show-large-card', () => {
+                        smallCard.hideSmallCardList();
+                        largeCard.showLargeCard();
+                    });
+                    largeCard.addEventListener('show-small-cards', () => {
+                        largeCard.backBtnHandler();
+                        smallCard.showSmallCardList();
+                    })
+                    cityList.shadowRoot.childNodes[3].appendChild(smallCard);
+                    appMain.shadowRoot.childNodes[3].insertAdjacentElement('beforeend', largeCard);
+                    if (Number(localStorage.getItem("stateID")) === largeCard.cardID) {
+                        smallCard.hideSmallCardList();
+                        largeCard.showLargeCard();
+                    }
+                })
             }
 
             // Assumes a button with id "logout" in the DOM
@@ -66,90 +107,11 @@ const main = async function () {
                 profileElement.innerHTML = `
             <p>${userProfile.name}</p>
             <img src="${userProfile.picture}" />
-          `;
-                // const appMain = new AppMain();
-                // document.body.insertAdjacentElement('afterbegin', appMain);
-
-                // const appHeader = new AppHeader();
-                // appMain.shadowRoot.childNodes[3].insertAdjacentElement('afterbegin', appHeader);
-
-                // const appFooter = new AppFooter();
-                // document.body.insertAdjacentElement('beforeend', appFooter);
-
-                // let addCity = new AddCityForm();
-                // appHeader.insertAdjacentElement('afterend', addCity);
-
-                // let cityList = new WeatherItemList();
-                // addCity.insertAdjacentElement('afterend', cityList);
-
-                // const cityCodes = await fetchCityCodes();
-                // await cacheData(cityCodes);
-                // const cachedCityWeatherData = await retrieveDataFromCache("cityData");
-                // const cityObjects = createCityObjects(cachedCityWeatherData);
-
-                // cityObjects.forEach(cityObject => {
-                //     let smallCard = new SmallWeatherCard(cityObject);
-                //     let largeCard = new LargeWeatherCard(cityObject);
-                //     smallCard.addEventListener('show-large-card', () => {
-                //         smallCard.hideSmallCardList();
-                //         largeCard.showLargeCard();
-                //     });
-                //     largeCard.addEventListener('show-small-cards', () => {
-                //         largeCard.backBtnHandler();
-                //         smallCard.showSmallCardList();
-                //     })
-                //     cityList.shadowRoot.childNodes[3].appendChild(smallCard);
-                //     appMain.shadowRoot.childNodes[3].insertAdjacentElement('beforeend', largeCard);
-                //     if (Number(localStorage.getItem("stateID")) === largeCard.cardID) {
-                //         smallCard.hideSmallCardList();
-                //         largeCard.showLargeCard();
-                //     }
-                // })
-                
+          `;                
             } else {
                 profileElement.style.display = "none";
             }
         });
-
-        // rest of the flow
-        const appMain = new AppMain();
-        document.body.insertAdjacentElement('afterbegin', appMain);
-
-        const appHeader = new AppHeader();
-        appMain.shadowRoot.childNodes[3].insertAdjacentElement('afterbegin', appHeader);
-        
-        const appFooter = new AppFooter();
-        document.body.insertAdjacentElement('beforeend', appFooter);
-
-        let addCity = new AddCityForm();
-        appHeader.insertAdjacentElement('afterend', addCity);
-
-        let cityList = new WeatherItemList();
-        addCity.insertAdjacentElement('afterend', cityList);
-    
-        const cityCodes = await fetchCityCodes();
-        await cacheData(cityCodes);
-        const cachedCityWeatherData = await retrieveDataFromCache("cityData");
-        const cityObjects = createCityObjects(cachedCityWeatherData);
-
-        cityObjects.forEach(cityObject => {
-            let smallCard = new SmallWeatherCard(cityObject);
-            let largeCard = new LargeWeatherCard(cityObject);
-            smallCard.addEventListener('show-large-card', () => {
-                smallCard.hideSmallCardList();
-                largeCard.showLargeCard();
-            });
-            largeCard.addEventListener('show-small-cards', () => {
-                largeCard.backBtnHandler();
-                smallCard.showSmallCardList();
-            })
-            cityList.shadowRoot.childNodes[3].appendChild(smallCard);
-            appMain.shadowRoot.childNodes[3].insertAdjacentElement('beforeend', largeCard);
-            if (Number(localStorage.getItem("stateID")) === largeCard.cardID) {
-                smallCard.hideSmallCardList();
-                largeCard.showLargeCard();
-            }
-        })
     } catch (error) {
         window.alert('Weather data cannot be retrieved!');
         console.error(error);
