@@ -1,0 +1,23 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#logoutbtn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 10rem;
+    height: 2rem;
+    font-size: 1.5rem;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    transition: background-color 0.12s ease-in-out, transform 0.12s ease-in-out;
+}
+
+#logoutbtn:hover {
+    background-color: yellow;
+    transform: scale(0.95);
+}
