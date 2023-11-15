@@ -13,6 +13,7 @@ import {
 } from './helpers/dataHelper.js';
 import { LoginButton } from './components/Login.js';
 import { LogoutButton } from './components/Logout.js';
+import { ProfileInfo } from './components/ProfileInfo.js';
 
 const auth0 = require('@auth0/auth0-spa-js');
 
@@ -86,8 +87,9 @@ const main = async function () {
                         smallCard.hideSmallCardList();
                         largeCard.showLargeCard();
                     }
-
                 })
+                const profileInfo = new ProfileInfo();
+                document.body.appendChild(profileInfo);
             }
 
             const logoutBtn = new LogoutButton();
