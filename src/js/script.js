@@ -26,13 +26,18 @@ const main = async function () {
     try {
         // login button to
         const loginButton = new LoginButton();
-        if (localStorage.getItem("loggedIn") !== "true") {
-            document.body.insertAdjacentElement('beforebegin', loginButton);            
+        if (localStorage.getItem("isAuthenticated") !== "true") {
+            document.body.insertAdjacentElement('beforebegin', loginButton);
         }
-
+        
+        const appMain = new AppMain();
+        const appHeader = new AppHeader();
+        const addCity = new AddCityForm();
+        const cityList = new WeatherItemList();
+        const appFooter = new AppFooter();
         const profileInfo = new ProfileInfo();
         const logoutBtn = new LogoutButton();
-
+        
         auth0.createAuth0Client({
             domain: `${DOMAIN}`,
             clientId: `${CLIENTID}`,
@@ -53,25 +58,29 @@ const main = async function () {
                     location.search.includes("error="))) {
                 await auth0Client.handleRedirectCallback();
                 window.history.replaceState({}, document.title, "/");
-                localStorage.setItem("loggedIn", true);
+            }
+            
+            const isAuthenticated = await auth0Client.isAuthenticated();
+            const userProfile = await auth0Client.getUser();
+            
+            localStorage.setItem("isAuthenticated", isAuthenticated);
+            // Assumes an element with id "profile" in the DOM
+            // loka1995 -> In this case "profileInfo" custom element was used.
+            if (isAuthenticated) {
+                loginButton.style.display = "none";
+                profileInfo.style.display = "flex";
+                profileInfo.setProfilePic(userProfile.picture);
+                profileInfo.setUserName(userProfile.name);
+                console.log("isAuthenticated: ", isAuthenticated);
+            } else {
+                profileInfo.style.display = "none";
             }
 
-            if (localStorage.getItem("loggedIn") === "true") {
-                loginButton.style.display = "none";
-
-                const appMain = new AppMain();
+            if (isAuthenticated) {
                 document.body.insertAdjacentElement('afterbegin', appMain);
-
-                const appHeader = new AppHeader();
                 appMain.shadowRoot.childNodes[3].insertAdjacentElement('afterbegin', appHeader);
-
-                const appFooter = new AppFooter();
                 document.body.insertAdjacentElement('beforeend', appFooter);
-
-                let addCity = new AddCityForm();
                 appHeader.insertAdjacentElement('afterend', addCity);
-
-                let cityList = new WeatherItemList();
                 addCity.insertAdjacentElement('afterend', cityList);
 
                 const cityCodes = await fetchCityCodes();
@@ -97,7 +106,7 @@ const main = async function () {
                         largeCard.showLargeCard();
                     }
                 })
-                
+
                 document.body.appendChild(profileInfo);
                 document.body.appendChild(logoutBtn);
             }
@@ -110,23 +119,10 @@ const main = async function () {
                 auth0Client.logout();
                 console.log("user logged out...")
                 logoutBtn.style.display = "none";
-                localStorage.removeItem("loggedIn");
                 localStorage.removeItem("stateID");
+                localStorage.removeItem("isAuthenticated");
             });
 
-            const isAuthenticated = await auth0Client.isAuthenticated();
-            const userProfile = await auth0Client.getUser();
-
-            // Assumes an element with id "profile" in the DOM
-            // loka1995 -> In this case "profileInfo" custom element was used.
-            if (isAuthenticated) {
-                profileInfo.style.display = "flex";
-                profileInfo.setProfilePic(userProfile.picture);
-                profileInfo.setUserName(userProfile.name);
-                console.log("isAuthenticated: ", isAuthenticated);
-            } else {
-                profileInfo.style.display = "none";
-            }
         });
     } catch (error) {
         window.alert('Weather data cannot be retrieved!');
