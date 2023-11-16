@@ -10,25 +10,8 @@ export const createCityObjects = function (cachedData) {
         const cityWeatherDataList = cachedData;
 
         for (let i = 0; i < cityWeatherDataList.length; i++) {
-            // let cityName = cityWeatherDataList[i].name;
-            // let country = cityWeatherDataList[i].sys.country;
-            // let temperature = Math.round(cityWeatherDataList[i].main.temp);
-            // let minTemp = Math.round(cityWeatherDataList[i].main.temp_min);
-            // let maxTemp = Math.round(cityWeatherDataList[i].main.temp_min);
-            // let pressure = cityWeatherDataList[i].main.pressure;
-            // let humidity = cityWeatherDataList[i].main.humidity;
-            // let visibility = (cityWeatherDataList[i].visibility / 1000).toFixed(2);
-            // let windSpeed = cityWeatherDataList[i].wind.speed.toFixed(1);
-            // let windDirection = cityWeatherDataList[i].wind.deg;
             let timeZoneOffset = cityWeatherDataList[i].sys.timezone;
-            // let time = timeAndDateFormatter(cityWeatherDataList[i].dt, timeZoneOffset).time;
-            // let date = timeAndDateFormatter(cityWeatherDataList[i].dt, timeZoneOffset).date;
-            // let sunrise = timeAndDateFormatter(cityWeatherDataList[i].sys.sunrise, timeZoneOffset).time;
-            // let sunset = timeAndDateFormatter(cityWeatherDataList[i].sys.sunset, timeZoneOffset).time;
-            // let description = capFirstLetter(cityWeatherDataList[i].weather[cityWeatherDataList[i].weather.length - 1].description);
             let descriptionIconCode = cityWeatherDataList[i].weather[cityWeatherDataList[i].weather.length - 1].icon;
-            // let iconURL = `${OPENWEATHERMAP_ICON_URL}/${descriptionIconCode}@2x.png`;
-
             const tempObject = {
                 cityName: cityWeatherDataList[i].name,
                 country: cityWeatherDataList[i].sys.country,

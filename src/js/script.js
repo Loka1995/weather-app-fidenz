@@ -24,12 +24,7 @@ window.addEventListener("load", () => {
 
 const main = async function () {
     try {
-        // login button to
         const loginButton = new LoginButton();
-        if (localStorage.getItem("isAuthenticated") !== "true") {
-            document.body.insertAdjacentElement('beforebegin', loginButton);
-        }
-        
         const appMain = new AppMain();
         const appHeader = new AppHeader();
         const addCity = new AddCityForm();
@@ -37,17 +32,23 @@ const main = async function () {
         const appFooter = new AppFooter();
         const profileInfo = new ProfileInfo();
         const logoutBtn = new LogoutButton();
-        
+
+        if (localStorage.getItem("isAuthenticated") !== "true") {
+            document.body.insertAdjacentElement('beforebegin', loginButton);
+        }
+
         auth0.createAuth0Client({
             domain: `${DOMAIN}`,
             clientId: `${CLIENTID}`,
+            cacheLocation: 'localstorage',
+            useRefreshTokens: true,
             authorizationParams: {
                 redirect_uri: window.location.origin
             }
         }).then(async (auth0Client) => {
 
-            // Assumes a button with id "login" in the DOM
-            // loka1995 -> I changed the login button to my custom button from LoginButton component.
+            
+            // "loginButton" custom element to login users.
             loginButton.addEventListener("login-process", (e) => {
                 e.preventDefault();
                 auth0Client.loginWithRedirect();
@@ -59,19 +60,17 @@ const main = async function () {
                 await auth0Client.handleRedirectCallback();
                 window.history.replaceState({}, document.title, "/");
             }
-            
+
             const isAuthenticated = await auth0Client.isAuthenticated();
             const userProfile = await auth0Client.getUser();
-            
             localStorage.setItem("isAuthenticated", isAuthenticated);
-            // Assumes an element with id "profile" in the DOM
-            // loka1995 -> In this case "profileInfo" custom element was used.
+
+            // loka1995 -> "profileInfo" custom element to store profile pic and username.
             if (isAuthenticated) {
-                loginButton.style.display = "none";
+                loginButton.remove();
                 profileInfo.style.display = "flex";
                 profileInfo.setProfilePic(userProfile.picture);
                 profileInfo.setUserName(userProfile.name);
-                console.log("isAuthenticated: ", isAuthenticated);
             } else {
                 profileInfo.style.display = "none";
             }
@@ -106,14 +105,11 @@ const main = async function () {
                         largeCard.showLargeCard();
                     }
                 })
-
                 document.body.appendChild(profileInfo);
                 document.body.appendChild(logoutBtn);
             }
 
-            // Assumes a button with id "logout" in the DOM
-            // loka1995 -> "logoutBtn" custom component used instead
-
+            // loka1995 -> "logoutBtn" custom element to handle logout.
             logoutBtn.addEventListener("logout-process", (e) => {
                 e.preventDefault();
                 auth0Client.logout();

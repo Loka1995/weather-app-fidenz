@@ -4,6 +4,7 @@
 }
 
 #profile-info {
+    border-radius: 0.5rem;
     position: absolute;
     right: 1rem;
     top: 4rem;
@@ -19,15 +20,19 @@
     width: 3rem;
     height: 3rem;
     background-color: red;
+    border-radius: 0.5rem;
 }
 
 #profile-pic img {
     height: 100%;
     width: 100%;
+    border-radius: 0.5rem;
 }
 
 #user-name {
     padding: 0 1rem;
+    font-size: 0.9rem;
+    border-radius: 0.5rem;
 }
 
 
