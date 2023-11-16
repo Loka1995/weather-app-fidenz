@@ -27,6 +27,9 @@ const main = async function () {
         const loginButton = new LoginButton();
         document.body.insertAdjacentElement('beforebegin', loginButton);
 
+        const profileInfo = new ProfileInfo();
+        const logoutBtn = new LogoutButton();
+
         auth0.createAuth0Client({
             domain: "dev-76bkodou00g0wbsb.us.auth0.com",
             clientId: "ly1z2WsnsV6YJiKmvXztFgCo5Z2iqf1O",
@@ -88,14 +91,13 @@ const main = async function () {
                         largeCard.showLargeCard();
                     }
                 })
-                const profileInfo = new ProfileInfo();
+                
                 document.body.appendChild(profileInfo);
+                document.body.appendChild(logoutBtn);
             }
 
-            const logoutBtn = new LogoutButton();
-            document.body.appendChild(logoutBtn);
             // Assumes a button with id "logout" in the DOM
-            // const logoutButton = document.getElementById("logout");
+            // loka1995 -> "logoutBtn" custom component used instead
 
             logoutBtn.addEventListener("logout-process", (e) => {
                 e.preventDefault();
@@ -108,17 +110,14 @@ const main = async function () {
             const userProfile = await auth0Client.getUser();
 
             // Assumes an element with id "profile" in the DOM
-            // const profileElement = document.getElementById("profile");
-
+            // loka1995 -> In this case "profileInfo" custom element was used.
             if (isAuthenticated) {
-                profileElement.style.display = "block";
-                profileElement.innerHTML = `
-            <p>${userProfile.name}</p>
-            <img src="${userProfile.picture}" />
-          `;
-                
+                console.log(profileInfo);
+                profileInfo.style.display = "flex";
+                profileInfo.setProfilePic(userProfile.picture);
+                profileInfo.setUserName(userProfile.name);
             } else {
-                profileElement.style.display = "none";
+                profileInfo.style.display = "none";
             }
         });
     } catch (error) {
