@@ -14,6 +14,7 @@ import {
 import { LoginButton } from './components/Login.js';
 import { LogoutButton } from './components/Logout.js';
 import { ProfileInfo } from './components/ProfileInfo.js';
+import { DOMAIN, CLIENTID } from './constants/constants.js';
 
 const auth0 = require('@auth0/auth0-spa-js');
 
@@ -25,14 +26,16 @@ const main = async function () {
     try {
         // login button to
         const loginButton = new LoginButton();
-        document.body.insertAdjacentElement('beforebegin', loginButton);
+        if (localStorage.getItem("loggedIn") !== "true") {
+            document.body.insertAdjacentElement('beforebegin', loginButton);            
+        }
 
         const profileInfo = new ProfileInfo();
         const logoutBtn = new LogoutButton();
 
         auth0.createAuth0Client({
-            domain: "dev-76bkodou00g0wbsb.us.auth0.com",
-            clientId: "ly1z2WsnsV6YJiKmvXztFgCo5Z2iqf1O",
+            domain: `${DOMAIN}`,
+            clientId: `${CLIENTID}`,
             authorizationParams: {
                 redirect_uri: window.location.origin
             }
@@ -50,7 +53,10 @@ const main = async function () {
                     location.search.includes("error="))) {
                 await auth0Client.handleRedirectCallback();
                 window.history.replaceState({}, document.title, "/");
+                localStorage.setItem("loggedIn", true);
+            }
 
+            if (localStorage.getItem("loggedIn") === "true") {
                 loginButton.style.display = "none";
 
                 const appMain = new AppMain();
@@ -104,6 +110,8 @@ const main = async function () {
                 auth0Client.logout();
                 console.log("user logged out...")
                 logoutBtn.style.display = "none";
+                localStorage.removeItem("loggedIn");
+                localStorage.removeItem("stateID");
             });
 
             const isAuthenticated = await auth0Client.isAuthenticated();
@@ -112,10 +120,10 @@ const main = async function () {
             // Assumes an element with id "profile" in the DOM
             // loka1995 -> In this case "profileInfo" custom element was used.
             if (isAuthenticated) {
-                console.log(profileInfo);
                 profileInfo.style.display = "flex";
                 profileInfo.setProfilePic(userProfile.picture);
                 profileInfo.setUserName(userProfile.name);
+                console.log("isAuthenticated: ", isAuthenticated);
             } else {
                 profileInfo.style.display = "none";
             }
